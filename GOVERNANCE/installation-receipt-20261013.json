@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-13",
+  "skill": "eu-web-compliance",
+  "version": "1.0.0",
+  "source_commit": "11dde4bbd9b833260863c64d9ac25dd702b18f6d",
+  "upstream_commit": "5034795d5bcc68b63549e729fff1ad9567889bf1",
+  "runtime": "/home/codexntnl/.codex/skills/eu-web-compliance",
+  "payload": "/srv/codex-executor/skills/eu-web-compliance-1.0.0/eu-web-compliance",
+  "pre_state": "absent",
+  "installer": "system skill-installer download exact commit",
+  "tracked_files_parity": 119,
+  "rollback": "created symlink, verified, unlinked to absent pre-state, relinked and verified",
+  "fixture_exit": 0,
+  "fixture_stdout": "[]\n",
+  "fixture_stderr": "Coverage: {\"scanned_files\": 1, \"omissions\": [], \"truncated\": false, \"complete\": true}\n",
+  "audit_verdict": "PASS_WITH_WARNINGS",
+  "tests": 37,
+  "real_web_audit": "not performed",
+  "next_turn_discovery": "pending next turn"
+}
