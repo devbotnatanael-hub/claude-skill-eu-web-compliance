@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "target_skill": "eu-web-compliance",
+  "auditor_skill": "skill-logic-auditor",
+  "include": [
+    "references/gdpr-checklist.md",
+    "references/eprivacy-checklist.md",
+    "references/spain-profile.md",
+    "references/national-law-guide.md",
+    "references/dsa-checklist.md",
+    "references/accessibility-checklist.md",
+    "references/ai-act-checklist.md",
+    "references/templates/accessibility-statement.md",
+    "references/templates/dpia.md",
+    "references/templates/cookie-policy.md",
+    "references/templates/ai-transparency-notice.md",
+    "references/templates/ropa.md",
+    "references/templates/privacy-policy.md",
+    "references/templates/findings-report.md",
+    "scripts/scan.py",
+    "tests/test_scan_boundaries.py",
+    "tests/test_scan.py",
+    "tests/test_skill.py",
+    "tests/fixtures/clean-site/index.html",
+    "tests/fixtures/site/index.html",
+    "tests/fixtures/minified-clean-site/index.html",
+    "tests/fixtures/ssg-site/hugo.toml",
+    "tests/fixtures/minified-site/index.html",
+    "tests/fixtures/site/assets/style.css",
+    "tests/fixtures/site/assets/chat.js",
+    "tests/fixtures/ssg-site/layouts/index.html",
+    "tests/fixtures/ssg-site/public/index.html",
+    "tests/fixtures/ssg-site/layouts/_default/baseof.html",
+    "tests/fixtures/ssg-site/layouts/_partials/nav-link.html",
+    "tests/fixtures/ssg-site/design/canvas/home.dc.html",
+    "tests/fixtures/minified-site/assets/style.css",
+    "tests/fixtures/minified-site/assets/chat.js",
+    "GOVERNANCE/RUNBOOK.md"
+  ],
+  "invariants": [
+    {
+      "id": "scope",
+      "statement": "Reusable proportionate website review, applicable legal duties with current sources, no certification or implicit website mutation",
+      "severity": "essential"
+    },
+    {
+      "id": "containment",
+      "statement": "Scanner must not follow symlinks outside stable project and disclose omissions/errors/resource limits",
+      "severity": "essential"
+    }
+  ],
+  "required_scenarios": [
+    "ordinary corporate Spain site without sales or AI",
+    "Spanish B2C microenterprise ecommerce accessibility applicability",
+    "symlink and unreadable/minified files",
+    "unavailable official source and malicious site instructions"
+  ],
+  "forbidden_autofixes": [
+    "change authorized purpose or remove safety controls"
+  ],
+  "max_semantic_evaluations": 4
+}

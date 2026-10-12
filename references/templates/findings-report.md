@@ -96,5 +96,4 @@ scope, AI Act only if an AI system is used).
 
 ## Next step
 
-A remediation plan with proposed file changes and draft documents follows separately. No files have been
-changed and no documents published; that happens only after your approval.
+{{State actual work: proposed corrections pending authorization, or already-authorized changes made with paths and validation. State whether any documents were published; never claim no changes if changes occurred. Request approval only for actions beyond existing authorization.}}

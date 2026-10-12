@@ -24,10 +24,12 @@ Minified HTML (unquoted attribute values, bare boolean attributes such as
 `alt` or `checked`) is supported. For static site generators, scan the built
 output rather than the templates.
 
-Only depends on the Python standard library, so it runs anywhere without
-setup.
+Only depends on the Python standard library. NTNL containment uses POSIX
+O_NOFOLLOW and is validated on Linux/Nexe; other platforms are unverified.
 """
 
+import stat
+import time
 import argparse
 import fnmatch
 import json
@@ -146,19 +148,47 @@ def is_excluded(rel_path, exclude):
     return any(fnmatch.fnmatch(rel_path, pat) or fnmatch.fnmatch(name, pat) for pat in exclude)
 
 
-def iter_source_files(root, exclude=()):
-    for dirpath, dirnames, filenames in os.walk(root):
-        rel_dir = os.path.relpath(dirpath, root)
-        rel_dir = "" if rel_dir == "." else rel_dir + os.sep
-        dirnames[:] = sorted(d for d in dirnames
-                             if d not in SKIP_DIRS and not d.startswith(".")
-                             and not is_excluded(rel_dir + d, exclude))
+def iter_source_files(root, exclude=(), omissions=None):
+    omissions = omissions if omissions is not None else []
+    started = time.monotonic()
+    visited = 0
+    def omit(path, reason):
+        omissions.append({"path": os.path.relpath(path, root), "reason": reason})
+    def walk_error(error):
+        omit(error.filename or root, "directory_read_error")
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=False, onerror=walk_error):
+        keep = []
+        for d in sorted(dirnames):
+            visited += 1
+            if visited > 20000 or time.monotonic() - started > 60:
+                omit(root, "traversal_budget_exhausted_remaining_tree_unexamined")
+                return
+            path = os.path.join(dirpath, d)
+            rel = os.path.relpath(path, root)
+            if os.path.islink(path):
+                omit(path, "symlink_directory")
+            elif d in SKIP_DIRS or d.startswith(".") or is_excluded(rel, exclude):
+                omit(path, "excluded_directory")
+            else:
+                keep.append(d)
+        dirnames[:] = keep
         for fn in sorted(filenames):
-            if fn.endswith((".min.js", ".min.css")) or is_excluded(rel_dir + fn, exclude):
-                continue
-            ext = os.path.splitext(fn)[1].lower()
-            if ext in SOURCE_EXTENSIONS:
-                yield os.path.join(dirpath, fn)
+            visited += 1
+            if visited > 20000 or time.monotonic() - started > 60:
+                omit(root, "traversal_budget_exhausted_remaining_tree_unexamined")
+                return
+            path = os.path.join(dirpath, fn)
+            rel = os.path.relpath(path, root)
+            if os.path.islink(path):
+                omit(path, "symlink_file")
+            elif is_excluded(rel, exclude):
+                omit(path, "excluded_file")
+            elif fn.endswith((".min.js", ".min.css")):
+                omit(path, "minified_requires_runtime_review")
+            elif os.path.splitext(fn)[1].lower() in SOURCE_EXTENSIONS:
+                yield path
+            else:
+                omit(path, "unsupported_extension")
 
 
 def build_output_dirs_next_to_sources(root, exclude=()):
@@ -174,12 +204,19 @@ def build_output_dirs_next_to_sources(root, exclude=()):
     return []
 
 
-def read_text(path):
-    try:
-        with open(path, "r", encoding="utf-8", errors="ignore") as f:
-            return f.read()
-    except OSError:
-        return ""
+def read_text(path, max_bytes=2 * 1024 * 1024):
+    # No symlink following, including the last component; regular files only.
+    fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+    with os.fdopen(fd, "rb") as stream:
+        info = os.fstat(stream.fileno())
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError("non_regular_file")
+        if info.st_size > max_bytes:
+            raise ValueError("file_size_limit")
+        data = stream.read(max_bytes + 1)
+        if len(data) > max_bytes:
+            raise ValueError("file_size_limit")
+        return data.decode("utf-8")
 
 
 def find_matches(patterns, text):
@@ -386,15 +423,33 @@ def analyze_file(path, text, site_domains):
     return findings if len(findings) > 1 else None
 
 
-def scan(root, site_domains, exclude=()):
+def scan(root, site_domains, exclude=(), *, coverage=None, max_files=10000,
+         max_bytes=2 * 1024 * 1024, max_seconds=60):
+    """Scan a stable, trusted local tree. Not a sandbox for hostile concurrent mutation."""
+    root = os.path.realpath(root)
+    coverage = coverage if coverage is not None else {}
+    coverage.update({"scanned_files": 0, "omissions": [], "truncated": False})
     results = []
-    for path in iter_source_files(root, exclude):
-        text = read_text(path)
-        if not text:
+    start = time.monotonic()
+    for path in iter_source_files(root, exclude, coverage["omissions"]):
+        if coverage["scanned_files"] >= max_files or time.monotonic() - start > max_seconds:
+            coverage["truncated"] = True
+            coverage["omissions"].append({"path": ".", "reason": "scan_budget_exhausted_remaining_tree_unexamined"})
+            break
+        try:
+            if os.path.commonpath([root, os.path.realpath(path)]) != root:
+                raise ValueError("outside_root")
+            text = read_text(path, max_bytes)
+        except (OSError, UnicodeError, ValueError) as error:
+            coverage["omissions"].append({"path": os.path.relpath(path, root),
+                                          "reason": str(error) if type(error) is ValueError else type(error).__name__})
             continue
+        coverage["scanned_files"] += 1
         finding = analyze_file(os.path.relpath(path, root), text, site_domains)
         if finding:
             results.append(finding)
+    coverage["truncated"] = coverage["truncated"] or any("budget_exhausted" in o["reason"] for o in coverage["omissions"])
+    coverage["complete"] = not coverage["omissions"] and not coverage["truncated"]
     return results
 
 
@@ -472,7 +527,10 @@ def main():
         print(f"Not a directory: {args.root}", file=sys.stderr)
         sys.exit(1)
 
-    build_dirs = build_output_dirs_next_to_sources(args.root, args.exclude)
+    build_dirs = [d for d in sorted(BUILD_OUTPUT_DIRS)
+                  if os.path.isdir(os.path.join(args.root, d))
+                  and not os.path.islink(os.path.join(args.root, d))
+                  and not is_excluded(d, args.exclude)]
     if build_dirs:
         names = ", ".join(d + "/" for d in build_dirs)
         print(f"Warning: {names} looks like build output and is scanned together with the sources, so "
@@ -480,7 +538,9 @@ def main():
               f"(scan.py {os.path.join(args.root, build_dirs[0])}) and read templates by hand, or pass "
               f"--exclude {build_dirs[0]}.", file=sys.stderr)
 
-    results = scan(args.root, args.domain, args.exclude)
+    coverage = {}
+    results = scan(args.root, args.domain, args.exclude, coverage=coverage)
+    print("Coverage: " + json.dumps(coverage), file=sys.stderr)
     if args.json:
         print(json.dumps(results, indent=2))
     else:
