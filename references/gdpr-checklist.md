@@ -1,7 +1,7 @@
 # GDPR checklist (Regulation (EU) 2016/679)
 
-Core articles are stable law and safe to cite directly. Anything about fines, guidance, or national
-detail should still be checked live, mark `VERIFY` if not confirmed this session.
+Use this checklist to locate issues, not as primary-law text. Verify core articles, fines, guidance and
+national details against current official sources in this session; otherwise mark `VERIFY`.
 
 ## 1. Is there personal data at all (Art. 4(1))
 
@@ -27,7 +27,7 @@ affirmative act? Check for pre-ticked boxes (not valid), bundled consent (e.g. o
 ## 4. Children's data (Art. 8)
 
 If the site is directed at children, or a child could plausibly submit data (registration for
-children's or youth groups, events, camps), Art. 8 requires parental consent or authorization for
+children's or youth groups, events, camps), Where processing relies on consent under Art. 6(1)(a), Art. 8 requires parental consent or authorization for
 "information society services" offered directly to a child below the applicable age, the GDPR default
 is 16, but member states may set their own threshold between 13 and 16. The applicable age for the
 site's target country is always `VERIFY`, do not assume 16. Check: is there any age gate, any

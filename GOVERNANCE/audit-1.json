@@ -1,0 +1,143 @@
+{
+  "schema_version": "1.0.0",
+  "target_skill": "eu-web-compliance",
+  "target_version": "1.0.0",
+  "bundle_hash": "18606096b04da677e43c0b019933311d9730cfcb31e4df92fd7413a8f9a69e8d",
+  "auditor_skill_version": "0.1.0",
+  "rubric_version": "0.1.0",
+  "iterations": [
+    {
+      "number": 1,
+      "verdict": "FAIL_AUTOFIXABLE",
+      "dimensions": [
+        {
+          "id": "purpose_scope",
+          "state": "pass",
+          "evidence": "SKILL NTNL reusable scope selects actual markets, proportional depth, no certification; Spain profile separates national triggers."
+        },
+        {
+          "id": "activation_triggers",
+          "state": "pass",
+          "evidence": "Frontmatter triggers requested review/prepublication check; ordinary edits explicitly excluded."
+        },
+        {
+          "id": "workflow_consistency",
+          "state": "fail",
+          "evidence": "Finding F1: report template final paragraph contradicts authorized correction path in SKILL rules4 and Steps5-6."
+        },
+        {
+          "id": "state_termination_continuity",
+          "state": "warning",
+          "evidence": "Steps4-6 terminate with report/drafts and source version/date; no explicit interrupted-report reconciliation instruction. Read-only scan safely reruns."
+        },
+        {
+          "id": "failure_retry_idempotency",
+          "state": "pass",
+          "evidence": "scan read-only; omissions/truncation explicit; unavailable official sources become VERIFY and unavailable runtime checks code-only. 37 tests independently passed."
+        },
+        {
+          "id": "safety_authorization_permissions",
+          "state": "pass",
+          "evidence": "SKILL untrusted-input rule, no implied publication/submission/build execution, private report destination, stable-tree scanner boundaries; runbook Nexe-only deployment."
+        },
+        {
+          "id": "output_evidence_traceability",
+          "state": "fail",
+          "evidence": "Finding F2: GDPR checklist permits direct core citations without session verification, contrary to SKILL rule2; F1 can produce false no-changes statement."
+        },
+        {
+          "id": "skill_relationships",
+          "state": "pass",
+          "evidence": "Runbook separates independent activation audit from normal runtime; no circular runtime skill dependency."
+        },
+        {
+          "id": "execution_clarity",
+          "state": "fail",
+          "evidence": "Two definite wording conflicts require resolution; remaining applicability and scanner contracts executable."
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "normal_success",
+          "state": "pass",
+          "evidence": "Read-only request reaches sourced report through Steps1-6; fixture scan/tests successful. No live website execution."
+        },
+        {
+          "id": "incomplete_or_ambiguous_input",
+          "state": "pass",
+          "evidence": "Step1 establishes facts; Step5/template retain visible placeholders and missing-facts list."
+        },
+        {
+          "id": "boundary_condition",
+          "state": "pass",
+          "evidence": "scan limits files/bytes/time; tests cover file limit, oversize, FIFO and UTF8; external timeout required by contract."
+        },
+        {
+          "id": "unavailable_tool_or_dependency",
+          "state": "pass",
+          "evidence": "Step2b labels code-only; Step3 unavailable official text remains VERIFY."
+        },
+        {
+          "id": "out_of_scope_request",
+          "state": "pass",
+          "evidence": "No certification or silent worldwide/exhaustive audit; Step1 limits requested slice."
+        },
+        {
+          "id": "sensitive_or_unauthorized_operation",
+          "state": "fail",
+          "evidence": "Publication boundaries hold, but already-authorized fixes conflict with template unconditional renewed-approval wording (F1)."
+        },
+        {
+          "id": "continuation_after_interruption",
+          "state": "warning",
+          "evidence": "Stateless scan may safely rerun; report records commit/date, but partial report reconciliation is implicit."
+        },
+        {
+          "id": "ordinary corporate Spain site without sales or AI",
+          "state": "pass",
+          "evidence": "Spain profile avoids automatic ecommerce/DPO/DPIA duties; SKILL Step3 checks AI timing only if relevant."
+        },
+        {
+          "id": "Spanish B2C microenterprise ecommerce accessibility applicability",
+          "state": "pass",
+          "evidence": "Spain profile requires Ley11 exemption plus RD193 and RD1112 applicability checks; no blanket exemption; legal truth not certified by this logic audit."
+        },
+        {
+          "id": "symlink and unreadable/minified files",
+          "state": "pass",
+          "evidence": "scan skips symlink dirs/files, O_NOFOLLOW final open and realpath containment; omissions cover minified files and read errors. 37 tests passed on Linux stable local fixtures."
+        },
+        {
+          "id": "unavailable official source and malicious site instructions",
+          "state": "fail",
+          "evidence": "Malicious content explicitly untrusted and Step3 says VERIFY; GDPR opening offers conflicting exception for core articles (F2)."
+        }
+      ],
+      "findings": [
+        {
+          "id": "F1",
+          "severity": "critical",
+          "statement": "Make findings-report next step conditional on actual authorized work and publication state; remove blanket renewed-approval and no-files-changed assertions.",
+          "evidence": "references/templates/findings-report.md final paragraph says no files changed and only after approval; SKILL rule4/Step5 permit already-authorized corrections and Step6 requires changes made or proposed.",
+          "auto_fixable": true
+        },
+        {
+          "id": "F2",
+          "severity": "critical",
+          "statement": "Align GDPR opening with mandatory session verification: core articles also require current official verification or VERIFY.",
+          "evidence": "references/gdpr-checklist.md opening: Core articles are stable law and safe to cite directly; SKILL non-negotiable rule2 explicitly requires session verification of article numbers and rejects reference files as primary text.",
+          "auto_fixable": true
+        },
+        {
+          "id": "W1",
+          "severity": "suggestion",
+          "statement": "Add a brief interrupted-review resume rule: inspect existing report/source version and reconcile completed work before updating.",
+          "evidence": "SKILL Steps4-6 and findings-report version/date support continuity, but no explicit partial-report resume instruction. Scanner is read-only, so this is not a demonstrated corruption risk.",
+          "auto_fixable": true
+        }
+      ]
+    }
+  ],
+  "final_verdict": "FAIL_AUTOFIXABLE",
+  "next_action": "Separate integrator fixes F1/F2 without changing purpose or controls, freezes new bundle and obtains fresh independent audit; do not activate yet. Limits: exact manifest/profile schemas verified, 37 tests rerun; creator quick_validate accepted as supplied evidence only; no live website, external legal-source validation, publication or installation performed."
+}

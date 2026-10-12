@@ -190,7 +190,7 @@ class Cli(unittest.TestCase):
         self.assertIn("public/", proc.stderr)
         self.assertEqual(len(json.loads(proc.stdout)), 3)
         proc = self.run_cli(root, "--json", "--exclude", "public")
-        self.assertEqual(proc.stderr, "")
+        self.assertIn("Coverage:", proc.stderr)
 
     def test_missing_directory(self):
         proc = self.run_cli(os.path.join(FIXTURES, "does-not-exist"))
@@ -205,7 +205,7 @@ class ExampleOutput(unittest.TestCase):
         for saved, root in self.EXAMPLES.items():
             proc = subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "scan.py"), root,
                                    "--domain", "example.com"], capture_output=True, text=True, cwd=examples)
-            self.assertEqual(proc.stderr, "", saved)
+            self.assertIn("Coverage:", proc.stderr, saved)
             with open(os.path.join(examples, saved), encoding="utf-8") as f:
                 self.assertEqual(proc.stdout, f.read(),
                                  f"examples/{saved} is stale, regenerate it (see examples/README.md)")

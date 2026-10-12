@@ -1,3 +1,5 @@
+> **NTNL fork 1.0.0:** reusable Spain/EU profile, bounded scanner and explicit omissions. Scanner validation is Linux/Nexe only; other platforms require testing. See [governance and update runbook](GOVERNANCE/RUNBOOK.md).
+
 # EU Web Compliance, a Claude Skill
 
 A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that reviews
